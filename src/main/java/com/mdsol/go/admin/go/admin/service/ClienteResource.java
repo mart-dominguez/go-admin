@@ -5,14 +5,23 @@
  */
 package com.mdsol.go.admin.go.admin.service;
 
+import com.mdsol.go.admin.go.admin.modelo.Cliente;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -20,8 +29,12 @@ import javax.ws.rs.core.MediaType;
  * @author martdominguez
  */
 @Path("cliente")
+@Stateless
 public class ClienteResource {
 
+    @PersistenceContext(unitName = "GO_PU")
+    EntityManager em;
+    
     @Context
     private UriInfo context;
 
@@ -37,9 +50,17 @@ public class ClienteResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getJson() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
+    public Response buscarLista() {
+        List<Cliente> lista = em.createQuery("SELECT c FROM Cliente c").getResultList();
+        return Response.ok(lista).build();
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response buscarPorId(@PathParam("id") Integer id) {
+        Cliente c = em.find(Cliente.class,id);
+        return Response.ok(c).build();
     }
 
     /**
@@ -48,6 +69,17 @@ public class ClienteResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public void putJson(String content) {
+    public Response actualizar(Cliente c) {
+        Cliente c1 = em.merge(c);
+        return Response.ok(c1).build();
     }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response crear(Cliente c) {
+        em.persist(c);
+        return Response.ok().build();
+
+    }
+
 }
