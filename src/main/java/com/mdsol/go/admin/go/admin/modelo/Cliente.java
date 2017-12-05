@@ -6,17 +6,26 @@
 package com.mdsol.go.admin.go.admin.modelo;
 
 import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  *
  * @author martdominguez
  */
+@Entity
 public class Cliente {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nombre;
     private String correo;
     private String direccion;
     private String telefono;
+    @Transient
     private List<Abono> abonos;
 
     public Integer getId() {
